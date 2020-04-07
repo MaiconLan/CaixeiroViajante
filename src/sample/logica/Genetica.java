@@ -29,7 +29,7 @@ public class Genetica {
 
     private static void criarIndividuos(Integer numeroIndividuos, Cidade origem) {
         for (int i = 0; i < numeroIndividuos; i++)
-            criarIndividuos(origem);
+            criarIndividuo(origem);
     }
 
     private static void criarIndividuo(Cidade origem) {
@@ -54,15 +54,17 @@ public class Genetica {
     }
 
     private static void calcularTempo(Individuo individuo) {
-
+        Integer tempo = 0;
         for (int i = 0; i < individuo.cromossomo.length; i++) {
-
+            int linha = Integer.parseInt(individuo.cromossomo[i]);
+            int coluna = Integer.parseInt(individuo.cromossomo[i+1]);
+            tempo += distancias[linha][coluna];
         }
-        return null;
+        individuo.tempo = tempo;
     }
 
     private static void calcularFitness(Individuo individuo) {
-        individuo.fitness = Math.abs(individuo.x * individuo.y * Math.sin((Math.pow(individuo.y, Math.PI)) / 4));
+        individuo.fitness = Math.abs(individuo.tempo * Math.sin((Math.pow(individuo.y, Math.PI)) / 4));
     }
 
     private static Cidade getCidade(Integer id) {

@@ -8,6 +8,8 @@ public class Individuo {
 
     public Double fitness;
 
+    public Integer tempo;
+
     public Individuo(Integer size) {
         this.cromossomo = new String[size];
     }
