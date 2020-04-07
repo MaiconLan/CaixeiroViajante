@@ -23,19 +23,20 @@ public class Genetica {
     public static void main(String[] args) {
         iniciarPopulacao();
         preencherDistancias();
-        criarIndividuos(MAX_INDIVIDUOS);
+        criarIndividuos(MAX_INDIVIDUOS, cidades.get(0));
 
     }
 
-    private static void criarIndividuos(Integer numeroIndividuos) {
+    private static void criarIndividuos(Integer numeroIndividuos, Cidade origem) {
         for (int i = 0; i < numeroIndividuos; i++)
-            criarIndividuos();
+            criarIndividuos(origem);
     }
 
-    private static void criarIndividuos() {
+    private static void criarIndividuo(Cidade origem) {
         Individuo individuo = new Individuo(cidades.size());
-
         List<Integer> listaAleatoria = new ArrayList<>();
+
+        listaAleatoria.add(origem.getId());
 
         while (listaAleatoria.size() < cidades.size()) {
             int aleatorio = random.nextInt(cidades.size()) + 1;
@@ -54,7 +55,14 @@ public class Genetica {
 
     private static void calcularTempo(Individuo individuo) {
 
+        for (int i = 0; i < individuo.cromossomo.length; i++) {
 
+        }
+        return null;
+    }
+
+    private static void calcularFitness(Individuo individuo) {
+        individuo.fitness = Math.abs(individuo.x * individuo.y * Math.sin((Math.pow(individuo.y, Math.PI)) / 4));
     }
 
     private static Cidade getCidade(Integer id) {

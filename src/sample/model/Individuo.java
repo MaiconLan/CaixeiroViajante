@@ -4,8 +4,6 @@ import java.util.Stack;
 
 public class Individuo {
 
-    public Stack<Cidade> caminho = new Stack<>();
-
     public String cromossomo[];
 
     public Double fitness;
