@@ -1,16 +1,22 @@
 package sample.model;
 
-import java.util.Stack;
-
 public class Individuo {
 
     public String cromossomo[];
 
-    public Double fitness;
+    public Integer fitness;
 
     public Integer tempo;
 
-    public Individuo(Integer size) {
-        this.cromossomo = new String[size];
+    public Individuo(Integer tamanhoCromossomo) {
+        this.cromossomo = new String[tamanhoCromossomo];
+    }
+
+    public Integer getTempo() {
+        return tempo;
+    }
+
+    public Integer getFitness() {
+        return fitness;
     }
 }

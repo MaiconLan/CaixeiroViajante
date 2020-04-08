@@ -3,9 +3,8 @@ package sample.logica;
 import sample.model.Cidade;
 import sample.model.Individuo;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Genetica {
 
@@ -25,6 +24,41 @@ public class Genetica {
         preencherDistancias();
         criarIndividuos(MAX_INDIVIDUOS, cidades.get(0));
 
+        calcularFitness();
+        List<Individuo> individuosMaisAptos = selecionarIndividuosMaisAptos();
+        
+    }
+
+    private static List<Individuo> selecionarIndividuosMaisAptos() {
+        List<Individuo> individuosOrdenados = individuos.stream().sorted(Comparator.comparing(Individuo::getFitness)).collect(Collectors.toList());
+        List<Individuo> individuosSelecionados = new ArrayList<>();
+
+        int totalFitness = individuosOrdenados.stream().mapToInt(Individuo::getFitness).sum();
+
+        while (individuosSelecionados.size() < 2) {
+            Individuo selecionado = selecionarIndividuoMaisApto(individuosOrdenados, totalFitness);
+
+            if(individuosSelecionados.contains(selecionado))
+                continue;
+
+            individuosSelecionados.add(selecionado);
+        }
+
+        return individuosSelecionados;
+    }
+
+    private static Individuo selecionarIndividuoMaisApto(List<Individuo> individuosOrdenados, int totalFitness) {
+        int aleatorio = random.nextInt(totalFitness) + 1;
+
+        int sum = 0;
+        for (Individuo individuo : individuosOrdenados) {
+            sum += individuo.fitness;
+            if (sum > aleatorio)
+                return individuo;
+
+        }
+
+        throw new RuntimeException("Erro ao selecionar indivíduo mais apto!");
     }
 
     private static void criarIndividuos(Integer numeroIndividuos, Cidade origem) {
@@ -33,38 +67,68 @@ public class Genetica {
     }
 
     private static void criarIndividuo(Cidade origem) {
-        Individuo individuo = new Individuo(cidades.size());
+        Individuo individuo = new Individuo(cidades.size() + 1);
         List<Integer> listaAleatoria = new ArrayList<>();
 
+        // ADD a cidade de origem no começo na lista de valores aleatórios de cidades
         listaAleatoria.add(origem.getId());
 
+        // Gera em uma lista o percurso aleatório para percorrer
         while (listaAleatoria.size() < cidades.size()) {
             int aleatorio = random.nextInt(cidades.size()) + 1;
-            if(!listaAleatoria.contains(aleatorio)) {
+            if (!listaAleatoria.contains(aleatorio)) {
                 listaAleatoria.add(aleatorio);
             }
         }
 
+        // popula o cromossomo do indivíduo com o id das cidades
         for (int i = 0; i < listaAleatoria.size(); i++)
             individuo.cromossomo[i] = getCidade(listaAleatoria.get(i)).getId().toString();
 
-        calcularTempo(individuo);
+        // ADD a cidade de origem no final do array de cromossomos
+        individuo.cromossomo[cidades.size()] = individuo.cromossomo[0];
 
         individuos.add(individuo);
+        calcularTempo(individuo);
     }
 
     private static void calcularTempo(Individuo individuo) {
         Integer tempo = 0;
-        for (int i = 0; i < individuo.cromossomo.length; i++) {
+
+        for (int i = 0; i < individuo.cromossomo.length - 1; i++) {
+
+            // pega a posição da cidade de partida na matriz de distâncias
             int linha = Integer.parseInt(individuo.cromossomo[i]);
-            int coluna = Integer.parseInt(individuo.cromossomo[i+1]);
-            tempo += distancias[linha][coluna];
+
+            // pega a posição da cidade de chegada na matriz de distâncias
+            int coluna = Integer.parseInt(individuo.cromossomo[i + 1]);
+
+            // -1 é pra pegar a posição da cidade na matriz de distancias
+            // a matriz está populada conforme o id da cidade (n-1 onde n é o ID da cidade)
+            // se a cidade tem ID 1, então ela é a primeira cidade, logo esta na posição 0
+            tempo += distancias[linha - 1][coluna - 1];
         }
+
         individuo.tempo = tempo;
+
+        System.out.print("Indivíduo: ");
+
+        for (String s : individuo.cromossomo) {
+            System.out.print(s);
+        }
+
+        System.out.println("");
+        System.out.println("------");
+        System.out.println("Tempo: " + individuo.tempo);
+        System.out.println("Fitness: " + individuo.tempo);
     }
 
-    private static void calcularFitness(Individuo individuo) {
-        individuo.fitness = Math.abs(individuo.tempo * Math.sin((Math.pow(individuo.y, Math.PI)) / 4));
+    private static void calcularFitness() {
+        List<Individuo> individuosOrdenados = individuos.stream().sorted(Comparator.comparing(Individuo::getTempo).reversed()).collect(Collectors.toList());
+
+        for (int i = 0; i < individuosOrdenados.size(); i++) {
+            individuosOrdenados.get(i).fitness = i + 1;
+        }
     }
 
     private static Cidade getCidade(Integer id) {
@@ -86,7 +150,10 @@ public class Genetica {
             }
         }
 
+        mostrarDistancias();
+    }
 
+    private static void mostrarDistancias() {
         for (int i = 0; i < cidades.size(); i++) {
             String result = "";
 
@@ -95,10 +162,6 @@ public class Genetica {
             }
             System.out.println(result);
         }
-    }
-
-    private static void fitnessFunction() {
-
     }
 
     private static void iniciarPopulacao() {
