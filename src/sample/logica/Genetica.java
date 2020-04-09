@@ -26,7 +26,73 @@ public class Genetica {
 
         calcularFitness();
         List<Individuo> individuosMaisAptos = selecionarIndividuosMaisAptos();
-        
+
+        //crossOver(individuosMaisAptos);
+        mutacao(individuosMaisAptos);
+        mutacao(individuosMaisAptos);
+
+        System.out.println("-----------RESULTADO-----------");
+        individuosMaisAptos.forEach(i-> System.out.println(i.tempo));
+    }
+
+    private static void mutacao(List<Individuo> individuosMaisAptos) {
+        Individuo individuoA = individuosMaisAptos.get(0);
+        Individuo individuoB = individuosMaisAptos.get(1);
+
+        String[] cromossomoA = individuoA.cromossomo;
+        String[] cromossomoB = individuoB.cromossomo;
+
+        int pontoA = random.nextInt(individuoA.cromossomo.length - 2) + 1;
+        int pontoB = random.nextInt(individuoA.cromossomo.length - 2) + 1;
+
+        mutar(cromossomoA, pontoA, pontoB);
+        mutar(cromossomoB, pontoA, pontoB);
+
+        Individuo novoInividuoA = new Individuo(cromossomoA);
+        Individuo novoInividuoB = new Individuo(cromossomoB);
+
+        calcularTempo(novoInividuoA);
+        calcularTempo(novoInividuoB);
+
+        individuosMaisAptos.add(novoInividuoA);
+        individuosMaisAptos.add(novoInividuoB);
+    }
+
+    private static void mutar(String[] cromossomo, int pontoA, int pontoB) {
+        String a = cromossomo[pontoA];
+        String b = cromossomo[pontoB];
+
+        cromossomo[pontoA] = b;
+        cromossomo[pontoB] = a;
+    }
+
+    private static void crossOver(List<Individuo> individuosMaisAptos) {
+        Individuo individuoA = individuosMaisAptos.get(0);
+        Individuo individuoB = individuosMaisAptos.get(1);
+
+        int chance = random.nextInt(individuoA.cromossomo.length - 2) + 1;
+
+        String[] cromossomoA = new String[individuoA.cromossomo.length];
+        String[] cromossomoB = new String[individuoB.cromossomo.length];
+
+        for (int i = 0; i < chance; i++) {
+            cromossomoA[i] = individuoA.cromossomo[i];
+            cromossomoB[i] = individuoB.cromossomo[i];
+        }
+
+        for (int i = chance; i < individuoA.cromossomo.length; i++) {
+            cromossomoA[i] = individuoB.cromossomo[i];
+            cromossomoB[i] = individuoA.cromossomo[i];
+        }
+
+        Individuo novoInividuoA = new Individuo(cromossomoA);
+        Individuo novoInividuoB = new Individuo(cromossomoB);
+
+        calcularTempo(novoInividuoA);
+        calcularTempo(novoInividuoB);
+
+        individuosMaisAptos.add(novoInividuoA);
+        individuosMaisAptos.add(novoInividuoB);
     }
 
     private static List<Individuo> selecionarIndividuosMaisAptos() {
@@ -51,10 +117,23 @@ public class Genetica {
         int aleatorio = random.nextInt(totalFitness) + 1;
 
         int sum = 0;
+        /*
         for (Individuo individuo : individuosOrdenados) {
             sum += individuo.fitness;
-            if (sum > aleatorio)
+            if (aleatorio >= sum && aleatorio < totalFitness - (totalFitness - sum))
                 return individuo;
+
+        }
+         */
+
+        for (int i = 0; i < individuosOrdenados.size(); i++) {
+            sum += individuosOrdenados.get(i).fitness;
+
+            if(i == individuosOrdenados.size() -1)
+                return individuosOrdenados.get(i);
+
+            if (aleatorio >= sum && aleatorio < sum + individuosOrdenados.get(i+1).fitness)
+                return individuosOrdenados.get(i);
 
         }
 

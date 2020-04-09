@@ -8,6 +8,10 @@ public class Individuo {
 
     public Integer tempo;
 
+    public Individuo(String[] cromossomo) {
+        this.cromossomo = cromossomo;
+    }
+
     public Individuo(Integer tamanhoCromossomo) {
         this.cromossomo = new String[tamanhoCromossomo];
     }
