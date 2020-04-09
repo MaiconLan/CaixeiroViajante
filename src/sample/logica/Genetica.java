@@ -13,6 +13,7 @@ public class Genetica {
 
     private static final Integer MAX_INDIVIDUOS = 5;
     private static final Integer MAX_GERACOES = 50;
+    private static final Integer MIN_GERACOES_PARA_PROGREDIR = 5;
 
     private static List<Cidade> cidades = new ArrayList<>();
 
@@ -22,43 +23,67 @@ public class Genetica {
 
     private static List<Individuo> individuos = new ArrayList<>();
 
+    private static Individuo individuoMaisApto = null;
+
     public static void main(String[] args) {
+        int geracoes = 1;
+        int geracoesSemProgresso = 0;
+
         iniciarPopulacao();
         preencherDistancias();
         criarIndividuos(MAX_INDIVIDUOS, cidades.get(0));
 
+        while (geracoes <= MAX_GERACOES || geracoesSemProgresso()) {
+            executarGeracoes();
+            geracoes++;
+        }
+
+
+        System.out.println("-----------RESULTADO-----------");
+        individuos.forEach(i -> System.out.println(i.tempo));
+    }
+
+    private static boolean geracoesSemProgresso(int geracoesSemProgresso) {
+        List<Individuo> individuosOrdenados = individuos.stream().sorted(Comparator.comparing(Individuo::getFitness)).collect(Collectors.toList());
+        int totalFitness = individuosOrdenados.stream().mapToInt(Individuo::getFitness).sum();
+
+        Individuo individuo = selecionarIndividuoMaisApto(individuosOrdenados, totalFitness);
+
+        if(individuoMaisApto == null)
+            return false;
+        else if(individuoMaisApto == individuo){
+
+
+        }
+
+    }
+
+    private static void executarGeracoes() {
         calcularFitness();
         List<Individuo> individuosMaisAptos = selecionarIndividuosMaisAptos();
 
-        //crossOver(individuosMaisAptos);
-        mutacao(individuosMaisAptos);
-        mutacao(individuosMaisAptos);
+        while (individuosMaisAptos.size() < MAX_INDIVIDUOS) {
+            mutacao(individuosMaisAptos);
+        }
 
-        System.out.println("-----------RESULTADO-----------");
-        individuosMaisAptos.forEach(i -> System.out.println(i.tempo));
+        individuos = new ArrayList<>(individuosMaisAptos);
     }
 
     private static void mutacao(List<Individuo> individuosMaisAptos) {
-        Individuo individuoA = individuosMaisAptos.get(0);
-        Individuo individuoB = individuosMaisAptos.get(1);
+        Individuo individuo = individuosMaisAptos.get(0);
 
-        String[] cromossomoA = individuoA.cromossomo;
-        String[] cromossomoB = individuoB.cromossomo;
+        String[] cromossomo = individuo.cromossomo;
 
-        int pontoA = random.nextInt(individuoA.cromossomo.length - 2) + 1;
-        int pontoB = random.nextInt(individuoA.cromossomo.length - 2) + 1;
+        int pontoA = random.nextInt(individuo.cromossomo.length - 2) + 1;
+        int pontoB = random.nextInt(individuo.cromossomo.length - 2) + 1;
 
-        mutar(cromossomoA, pontoA, pontoB);
-        mutar(cromossomoB, pontoA, pontoB);
+        mutar(cromossomo, pontoA, pontoB);
 
-        Individuo novoInividuoA = new Individuo(cromossomoA);
-        Individuo novoInividuoB = new Individuo(cromossomoB);
+        Individuo novoInividuo = new Individuo(cromossomo);
 
-        calcularTempo(novoInividuoA);
-        calcularTempo(novoInividuoB);
+        calcularTempo(novoInividuo);
 
-        individuosMaisAptos.add(novoInividuoA);
-        individuosMaisAptos.add(novoInividuoB);
+        individuosMaisAptos.add(novoInividuo);
     }
 
     private static void mutar(String[] cromossomo, int pontoA, int pontoB) {
@@ -218,7 +243,7 @@ public class Genetica {
                 } else if (distancias[j][i] != null) {
                     distancias[i][j] = distancias[j][i];
                 } else {
-                    distancias[i][j] = random.nextInt(201);
+                    distancias[i][j] = random.nextInt(200) + 1;
                 }
             }
         }
