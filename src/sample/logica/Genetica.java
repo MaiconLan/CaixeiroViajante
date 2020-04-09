@@ -3,7 +3,10 @@ package sample.logica;
 import sample.model.Cidade;
 import sample.model.Individuo;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 public class Genetica {
@@ -32,7 +35,7 @@ public class Genetica {
         mutacao(individuosMaisAptos);
 
         System.out.println("-----------RESULTADO-----------");
-        individuosMaisAptos.forEach(i-> System.out.println(i.tempo));
+        individuosMaisAptos.forEach(i -> System.out.println(i.tempo));
     }
 
     private static void mutacao(List<Individuo> individuosMaisAptos) {
@@ -104,7 +107,7 @@ public class Genetica {
         while (individuosSelecionados.size() < 2) {
             Individuo selecionado = selecionarIndividuoMaisApto(individuosOrdenados, totalFitness);
 
-            if(individuosSelecionados.contains(selecionado))
+            if (individuosSelecionados.contains(selecionado))
                 continue;
 
             individuosSelecionados.add(selecionado);
@@ -117,22 +120,13 @@ public class Genetica {
         int aleatorio = random.nextInt(totalFitness) + 1;
 
         int sum = 0;
-        /*
-        for (Individuo individuo : individuosOrdenados) {
-            sum += individuo.fitness;
-            if (aleatorio >= sum && aleatorio < totalFitness - (totalFitness - sum))
-                return individuo;
-
-        }
-         */
-
         for (int i = 0; i < individuosOrdenados.size(); i++) {
             sum += individuosOrdenados.get(i).fitness;
 
-            if(i == individuosOrdenados.size() -1)
+            if (i == individuosOrdenados.size() - 1)
                 return individuosOrdenados.get(i);
 
-            if (aleatorio >= sum && aleatorio < sum + individuosOrdenados.get(i+1).fitness)
+            if (aleatorio >= sum && aleatorio < sum + individuosOrdenados.get(i + 1).fitness)
                 return individuosOrdenados.get(i);
 
         }
