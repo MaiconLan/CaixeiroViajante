@@ -1,21 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Text?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<GridPane alignment="center" hgap="10" maxHeight="-Infinity" maxWidth="-Infinity" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<GridPane alignment="center" hgap="10" maxHeight="-Infinity" maxWidth="-Infinity" vgap="10" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <opaqueInsets>
       <Insets />
    </opaqueInsets>
@@ -82,9 +72,23 @@
                            <children>
                               <VBox prefHeight="98.0" prefWidth="719.0">
                                  <children>
-                                    <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="719.0">
+                                    <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="719.0">
                                        <children>
-                                          <Button fx:id="btnPreencherDistancias" mnemonicParsing="false" onAction="#preencherDistancias" text="Preencher distancias">
+                                          <Text fx:id="erro1" strokeType="OUTSIDE" strokeWidth="0.0" />
+                                          <Label text="Cidade Origem">
+                                             <HBox.margin>
+                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                             </HBox.margin>
+                                          </Label>
+                                          <ComboBox fx:id="boxOrigem" prefWidth="150.0">
+                                             <HBox.margin>
+                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                             </HBox.margin>
+                                             <padding>
+                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                             </padding>
+                                          </ComboBox>
+                                          <Button fx:id="btnSalvarOrigem" mnemonicParsing="false" onAction="#salvarOrigem" text="Salvar">
                                              <opaqueInsets>
                                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                              </opaqueInsets>
@@ -95,12 +99,10 @@
                                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                              </HBox.margin>
                                           </Button>
-                                          <Text fx:id="erro1" strokeType="OUTSIDE" strokeWidth="0.0">
-                                             <HBox.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </HBox.margin>
-                                          </Text>
                                        </children>
+                                       <VBox.margin>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </VBox.margin>
                                     </HBox>
                                     <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="719.0">
                                        <children>
@@ -115,7 +117,7 @@
                                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                              </HBox.margin>
                                           </TextField>
-                                          <TextField fx:id="distancia" promptText="Distância">
+                                          <TextField fx:id="txtDistancia" promptText="Distância">
                                              <opaqueInsets>
                                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                              </opaqueInsets>
@@ -137,18 +139,26 @@
                                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                              </HBox.margin>
                                           </TextField>
-                                          <Button mnemonicParsing="false" onAction="#salvarDistancia" text="Salvar">
+                                          <Button fx:id="btnSalvarDistancia" disable="true" mnemonicParsing="false" onAction="#salvarDistancia" text="Salvar">
                                              <opaqueInsets>
                                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                              </opaqueInsets>
                                              <padding>
                                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                              </padding>
+                                             <HBox.margin>
+                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                             </HBox.margin>
                                           </Button>
+                                          <Text fx:id="erroDistancias" strokeType="OUTSIDE" strokeWidth="0.0" />
                                        </children>
+                                       <VBox.margin>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </VBox.margin>
                                     </HBox>
                                  </children>
                               </VBox>
+                              <Text fx:id="percursoMenor" layoutX="91.0" layoutY="232.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Resultado" />
                            </children></AnchorPane>
                   </content>
                 </Tab>

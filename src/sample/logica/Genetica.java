@@ -15,17 +15,51 @@ public class Genetica {
     private static final Integer MAX_GERACOES = 50;
     private static final Integer MIN_GERACOES_PARA_PROGREDIR = 15;
 
-    private static List<Cidade> cidades = new ArrayList<>();
+    public static List<Cidade> cidades = new ArrayList<>();
 
-    private static Integer[][] distancias;
+    public static Integer[][] distancias;
 
     private static Random random = new Random();
 
     private static List<Individuo> individuos = new ArrayList<>();
 
-    private static Individuo individuoMaisApto = null;
+    public static Individuo individuoMaisApto = null;
 
     public static void main(String[] args) {
+        executar();
+
+        System.out.println();
+        System.out.println("-----------RESULTADO-----------");
+        String[] cromossomo = individuoMaisApto.cromossomo;
+        String percurso = "";
+
+        for (int k = 0; k < cromossomo.length; k++) {
+            percurso += getCidade(Integer.parseInt(cromossomo[k])).getNome() + " -> ";
+        }
+
+        System.out.println();
+        System.out.println();
+
+        percurso += "\n Tempo: " + individuoMaisApto.tempo;
+        System.out.println(percurso);
+    }
+
+    public static void executarFRONT() {
+        int geracoes = 1;
+        Integer geracoesSemProgresso = 0;
+
+        mostrarDistancias();
+
+        criarIndividuos(MAX_INDIVIDUOS, cidades.get(0));
+
+        while (geracoes <= MAX_GERACOES && !geracoesSemProgresso.equals(MIN_GERACOES_PARA_PROGREDIR)) {
+            geracoesSemProgresso = verificarGeracoesProgredindo(geracoesSemProgresso);
+            executarGeracoes();
+            geracoes++;
+        }
+    }
+
+    public static void executar() {
         int geracoes = 1;
         Integer geracoesSemProgresso = 0;
 
@@ -38,9 +72,6 @@ public class Genetica {
             executarGeracoes();
             geracoes++;
         }
-
-        System.out.println("-----------RESULTADO-----------");
-        individuos.forEach(i -> System.out.println(i.tempo));
     }
 
     private static int verificarGeracoesProgredindo(Integer geracoesSemProgresso) {
@@ -188,12 +219,6 @@ public class Genetica {
         }
 
         individuo.tempo = tempo;
-
-        System.out.print("Indivíduo: ");
-
-        for (String s : individuo.cromossomo) {
-            System.out.print(s);
-        }
     }
 
     private static void calcularFitness() {
@@ -204,8 +229,25 @@ public class Genetica {
         }
     }
 
-    private static Cidade getCidade(Integer id) {
+    public static Cidade getCidade(Integer id) {
         return cidades.stream().filter(c -> c.getId().equals(id)).findFirst().get();
+    }
+
+    public void preencherDistancias(int distancia, int i, int j) {
+        if (distancias == null)
+            distancias = new Integer[cidades.size()][cidades.size()];
+
+        if (i == j) {
+            distancias[i][j] = 0;
+        } else if (distancias[j][i] != null) {
+            distancias[i][j] = distancias[j][i];
+        } else {
+            distancias[i][j] = distancia;
+        }
+    }
+
+    public boolean deveIrParaProximaIteracao(int i, int j) {
+        return i == j || distancias[j][i] != null;
     }
 
     private static void preencherDistancias() {
@@ -248,6 +290,10 @@ public class Genetica {
         cidades.add(new Cidade(generateId(), "Sangão"));
         cidades.add(new Cidade(generateId(), "13 de maio"));
         cidades.add(new Cidade(generateId(), "Gravatal"));
+    }
+
+    public static void adicionaCidade(String cidade) {
+        cidades.add(new Cidade(generateId(), cidade));
     }
 
     private static int generateId() {

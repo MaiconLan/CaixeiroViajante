@@ -1,14 +1,15 @@
 package sample;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import sample.logica.Genetica;
 import sample.model.Cidade;
-import sample.model.Percurso;
 
 import java.util.List;
 
@@ -19,6 +20,12 @@ public class Controller {
 
     @FXML
     private Text erro;
+
+    @FXML
+    private Text percursoMenor;
+
+    @FXML
+    private Text erroDistancias;
 
     @FXML
     private ListView<Cidade> listCidades;
@@ -33,58 +40,96 @@ public class Controller {
     private TextField txtCidadeDestino;
 
     @FXML
-    private Button btnPreencherDistancias;
+    private Button btnSalvarOrigem;
+
+    @FXML
+    private Button btnSalvarDistancia;
+
+    @FXML
+    private ComboBox<Cidade> boxOrigem;
 
     private Genetica genetica = new Genetica();
 
     private List<Cidade> cidadesDestino;
 
-    private int indexOrigem, indexDestino;
+    private int i, j;
 
     private Cidade cidadeOrigem, cidadeDestino;
 
     @FXML
-    void preencherDistancias(ActionEvent event) {
+    public void salvarOrigem(ActionEvent event){
+        cidadeOrigem = boxOrigem.getValue();
+        boxOrigem.setDisable(true);
+        btnSalvarOrigem.setDisable(true);
+        btnSalvarDistancia.setDisable(false);
 
-        cidadeOrigem = genetica.getCidades().get(indexOrigem);
-        cidadeDestino = genetica.getCidades().get(indexDestino);
+        genetica.preencherDistancias(0, i, j);
 
-        if(cidadeOrigem.equals(cidadeDestino)) {
-            txtDistancia.setText("0");
-            salvarDistancia(null);
-        }
-
-        Percurso percurso = new Percurso(cidadeOrigem, cidadeDestino);
-
-        while (!percursoJaCadastrado(percurso)) {
-            cidadesDestino.remove(cidadeDestino);
-            cidadeDestino = cidadesDestino.get(0);
-        }
-
-        txtCidadeOrigem.setText(cidadeOrigem.toString());
-        txtCidadeDestino.setText(cidadeDestino.toString());
-        btnPreencherDistancias.setDisable(true);
+        proximaIteracao();
     }
 
     @FXML
-    void salvarDistancia(ActionEvent event) {
-        Percurso percurso = new Percurso(cidadeOrigem, cidadeDestino, Integer.parseInt(txtDistancia.getText()));
-        //genetica.getPercursos().put(cidadeOrigem.getId().toString() + cidadeDestino.getId().toString(), percurso);
+    public void salvarDistancia(ActionEvent event) {
+        genetica.preencherDistancias(Integer.parseInt(txtDistancia.getText()), i, j);
 
-        /*
-            if () {
+        if(i == genetica.getCidades().size() - 1 && j == genetica.getCidades().size() - 1) {
+            txtDistancia.setDisable(true);
+            btnSalvarDistancia.setDisable(true);
+            genetica.executarFRONT();
 
+            mostrarPercursoMenor();
+            return;
+        }
+
+        //proxima iteracao
+        proximaIteracao();
+
+        boolean deveIrParaProximaIteracao = genetica.deveIrParaProximaIteracao(i, j);
+
+        if(deveIrParaProximaIteracao) {
+            salvarDistancia(event);
+        }
+
+        cidadeOrigem = genetica.getCidades().get(i);
+        cidadeDestino = genetica.getCidades().get(j);
+
+        txtDistancia.setText("");
+    }
+
+    private void proximaIteracao() {
+        if (j < genetica.getCidades().size() - 1) {
+            j++;
+        } else {
+            if (i < genetica.getCidades().size() - 1) {
+                i++;
+                j = 0;
+            } else {
+
+                i = 4;
+                j = 4;
+                return;
             }
-            i++;
-        */
-        txtDistancia.setText(null);
+        }
+
+        cidadeOrigem = genetica.getCidades().get(i);
+        cidadeDestino = genetica.getCidades().get(j);
+        txtCidadeOrigem.setText(cidadeOrigem.getNome());
+        txtCidadeDestino.setText(cidadeDestino.getNome());
     }
 
-    private boolean percursoJaCadastrado(Percurso percurso) {
-        return false;
-        //return genetica.getPercursos().stream().anyMatch(p -> p.equals(percurso));
-    }
+    private void mostrarPercursoMenor() {
+        String[] cromossomo = genetica.individuoMaisApto.cromossomo;
+        String percurso = "";
 
+        for (int k = 0; k < cromossomo.length; k++) {
+            percurso += genetica.getCidade(Integer.parseInt(cromossomo[k])).getNome() + " -> ";
+        }
+
+        percurso += "\n Tempo: " + genetica.individuoMaisApto.tempo;
+
+
+        percursoMenor.setText(percurso);
+    }
 
     @FXML
     void adicionarCidade(ActionEvent event) {
@@ -93,9 +138,11 @@ public class Controller {
             erro.setText("LIMITE MÁXIMO DE 10 cidades");
 
         } else {
-            listCidades.getItems().add(new Cidade(genetica.getCidades().size() + 1, txtCidade.getText()));
+            genetica.adicionaCidade(txtCidade.getText());
+            listCidades.getItems().clear();
+            genetica.getCidades().forEach(listCidades.getItems()::add);
+            boxOrigem.setItems(FXCollections.observableArrayList(genetica.getCidades()));
             txtCidade.setText("");
-            genetica.setCidades(listCidades.getItems());
         }
     }
 
